@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simple-server
+  namespace: default
+  labels:
+    app: simple-server
+spec:
+  selector:
+    matchLabels:
+      app: simple-server
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: simple-server
+    spec:
+      containers:
+        - image: docker.io/minikh/otusmicroservices:latest
+          name: otusmicroservices
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 20
